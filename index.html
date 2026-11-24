@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mes sessions Surf et Wing</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3f2;--surface:#fff;--ink:#12303a;--muted:#5d7a82;--line:#d3e0e0;--accent:#1b6f8a;--accent-ink:#fff;--bar:#1b6f8a;--star:#e0a526;--warn:#b4531a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1f26;--surface:#163039;--ink:#e6f1f0;--muted:#8fb0b6;--line:#244650;--accent:#5bbad5;--accent-ink:#06222b;--bar:#5bbad5;--star:#f0b940;--warn:#f0985a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1f26;--surface:#163039;--ink:#e6f1f0;--muted:#8fb0b6;--line:#244650;--accent:#5bbad5;--accent-ink:#06222b;--bar:#5bbad5;--star:#f0b940;--warn:#f0985a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
+main{max-width:560px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:2rem;font-weight:800;letter-spacing:-.02em;margin:8px 0 18px}
+h2{font-size:1.05rem;font-weight:600;margin:0 0 12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat b{display:block;font-size:1.6rem;font-weight:800;line-height:1.1}
+.stat span{color:var(--muted);font-size:.85rem}
+.chart{margin-top:14px;overflow-x:auto}
+label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.full{margin-bottom:10px}
+.stars{display:flex;gap:6px}
+.stars button{background:none;border:0;font-size:1.7rem;line-height:1;color:var(--line);cursor:pointer;padding:2px}
+.stars button.on{color:var(--star)}
+.primary{width:100%;background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:13px;font:inherit;font-weight:600;cursor:pointer}
+.sess{border-top:1px solid var(--line);padding:12px 0}
+.sess:first-of-type{border-top:0}
+.sess .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.sess .spot{font-weight:600}
+.sess .meta{color:var(--muted);font-size:.88rem}
+.sess .note{font-size:.92rem;margin-top:4px}
+.del{background:none;border:0;color:var(--muted);font:inherit;font-size:.82rem;cursor:pointer;padding:0}
+.empty{color:var(--muted)}
+.tabs{display:flex;gap:6px;margin-bottom:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs button{flex:1;font:inherit;font-weight:600;background:none;border:0;border-radius:9px;padding:9px;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tabs.sub{background:none;border:0;padding:0;margin-bottom:16px;gap:8px}
+.tabs.sub button{border:1px solid var(--line);background:var(--surface)}
+.tabs.sub button[aria-selected="true"]{border-color:var(--accent)}
+.links a{display:block;padding:12px 0;border-top:1px solid var(--line);color:var(--accent);text-decoration:none;font-weight:600}
+.links a:first-child{border-top:0}
+.links a small{display:block;color:var(--muted);font-weight:400;font-size:.85rem}
+.guide{margin:0;padding-left:18px}
+.guide li{margin-bottom:8px}
+.fc{overflow-x:auto}
+.fc table{width:100%;border-collapse:collapse;font-size:.9rem}
+.fc th,.fc td{text-align:left;padding:7px 6px;border-top:1px solid var(--line);white-space:nowrap}
+.fc tr.day th{padding-top:14px;border-top:0;font-size:.95rem;text-transform:capitalize}
+.fc thead th{color:var(--muted);font-weight:400;font-size:.8rem;border-top:0}
+.good{color:var(--accent);font-weight:600}
+.warn{color:var(--warn);font-weight:600}
+.err{color:var(--muted)}
+.fc button,.retry{font:inherit;background:none;border:1px solid var(--line);color:var(--accent);border-radius:8px;padding:6px 12px;cursor:pointer;margin-top:8px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<h1>Mes sessions</h1>
+
+<div class="tabs" role="tablist" aria-label="Sport">
+  <button role="tab" id="spSurf" data-sp="surf">🏄 Surf</button>
+  <button role="tab" id="spWing" data-sp="wing">🪁 Wing</button>
+</div>
+<div class="tabs sub" role="tablist" aria-label="Volet">
+  <button role="tab" id="tbS" data-tb="S">Sessions</button>
+  <button role="tab" id="tbF" data-tb="F">Prévisions</button>
+</div>
+
+<section class="card" data-tb="S" aria-label="Statistiques">
+  <div class="stats">
+    <div class="stat"><b id="sN">0</b><span>sessions</span></div>
+    <div class="stat"><b id="sH">0 h</b><span>dans l’eau</span></div>
+    <div class="stat"><b id="sR">–</b><span>note moyenne</span></div>
+    <div class="stat"><b id="sS">–</b><span>spot favori</span></div>
+  </div>
+  <div class="chart" id="chart" aria-label="Sessions par mois"></div>
+</section>
+
+<section class="card" data-tb="S">
+  <h2>Nouvelle session</h2>
+  <div class="row">
+    <div><label for="date">Date</label><input type="date" id="date"></div>
+    <div><label for="dur">Durée (min)</label><input type="number" id="dur" min="1" value="90" inputmode="numeric"></div>
+  </div>
+  <div class="full"><label for="spot">Spot</label><input id="spot" placeholder="ex. Guidel-Plages" list="spots"><datalist id="spots"></datalist></div>
+
+  <div data-sp="surf">
+    <div class="row">
+      <div><label for="size">Taille des vagues (m)</label><input type="number" id="size" min="0" step="0.1" value="1" inputmode="decimal"></div>
+      <div><label for="swell">Houle</label><select id="swell"><option>Faible</option><option selected>Moyenne</option><option>Forte</option></select></div>
+    </div>
+    <div class="row">
+      <div><label for="wind">Vent</label><select id="wind"><option>Offshore</option><option>Léger</option><option selected>Onshore</option><option>Fort</option></select></div>
+      <div><label for="tide">Marée</label><select id="tide"><option>Basse</option><option selected>Mi-marée</option><option>Haute</option><option>Montante</option><option>Descendante</option></select></div>
+    </div>
+  </div>
+
+  <div data-sp="wing">
+    <div class="row">
+      <div><label for="wkn">Vent (nœuds)</label><input type="number" id="wkn" min="0" value="18" inputmode="numeric"></div>
+      <div><label for="wsz">Taille de l’aile (m²)</label><input type="number" id="wsz" min="0" step="0.1" value="5" inputmode="decimal"></div>
+    </div>
+    <div class="full"><label for="gear">Planche et foil</label><input id="gear" placeholder="ex. planche 90 L, foil 1500"></div>
+  </div>
+
+  <div class="full"><label>Note de la session</label><div class="stars" id="stars" role="radiogroup" aria-label="Note sur 5"></div></div>
+  <div class="full"><label for="notes">Notes</label><textarea id="notes" rows="2" placeholder="Sensations, matériel, progrès…"></textarea></div>
+  <button class="primary" id="save">Enregistrer la session</button>
+</section>
+
+<section class="card" data-tb="S">
+  <h2>Historique</h2>
+  <div id="list"></div>
+</section>
+
+<section class="card" data-tb="F">
+  <h2 id="fcTitle">Prévisions</h2>
+  <div id="fc" class="empty">Chargement des prévisions…</div>
+  <p class="empty" style="font-size:.8rem;margin:10px 0 0">Données <a href="https://open-meteo.com/" target="_blank" rel="noopener" style="color:var(--accent)">Open-Meteo</a> pour Guidel-Plages (modèles globaux, indicatif).</p>
+</section>
+
+<section class="card" data-tb="F" data-sp="surf">
+  <h2>Autres sources</h2>
+  <div class="links">
+    <a href="https://fr.surf-forecast.com/breaks/Guidel-Plages/forecasts/latest" target="_blank" rel="noopener">Surf-Forecast<small>Houle, vent et marées sur 6 jours</small></a>
+    <a href="https://www.yadusurf.com/meteo-surf-report/guidel-plage/" target="_blank" rel="noopener">Ya du surf ?<small>Résumé en clair de la qualité du surf</small></a>
+    <a href="https://conditionssurf.fr/spots/guidel" target="_blank" rel="noopener">Conditions Surf<small>Prévisions sur 7 jours avec marées</small></a>
+  </div>
+</section>
+
+<section class="card" data-tb="F" data-sp="surf">
+  <h2>Lire une prévision</h2>
+  <ul class="guide">
+    <li><b>Période de la houle :</b> au-dessus de 10 s, les vagues sont plus puissantes et mieux formées ; en dessous de 7 s, elles sont plutôt hachées.</li>
+    <li><b>Vent :</b> un vent de terre (secteur Est ici) lisse la surface ; un vent de mer (Ouest) la rend brouillonne.</li>
+    <li><b>Marée :</b> note la marée de tes meilleures sessions pour trouver ce qui marche sur ton spot.</li>
+  </ul>
+</section>
+
+<section class="card" data-tb="F" data-sp="wing">
+  <h2>Lire une prévision</h2>
+  <ul class="guide">
+    <li><b>Vent :</b> en vert, entre 12 et 25 nœuds, une plage courante pour le wing. À toi d’ajuster selon ton aile et ton niveau.</li>
+    <li><b>Rafales :</b> un écart important entre vent moyen et rafales rend la session plus difficile.</li>
+    <li><b>Sécurité :</b> un vent de terre (secteur Est) te pousse vers le large : sors avec prudence, de préférence accompagné.</li>
+  </ul>
+</section>
+</main>
+
+<script>
+(function(){
+var K={surf:"surf-sessions-v1",wing:"wing-sessions-v1"},sport="surf",tab="S",data=[],rating=3,fcData=null,fcState="idle";
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function load(){try{var r=localStorage.getItem(K[sport]);data=r?JSON.parse(r):[]}catch(e){data=[]}if(!Array.isArray(data))data=[]}
+function save(){try{localStorage.setItem(K[sport],JSON.stringify(data))}catch(e){}}
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function fmtDate(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}
+function fmtDur(m){return m>=60?Math.floor(m/60)+" h"+(m%60?" "+String(m%60).padStart(2,"0"):""):m+" min"}
+function nf(v,d){return typeof v==="number"?v.toFixed(d).replace(".",","):"–"}
+function compass(d){return ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"][Math.round(d/22.5)%16]}
+
+function drawStars(){var h="";for(var i=1;i<=5;i++)h+='<button type="button" role="radio" aria-checked="'+(i===rating)+'" aria-label="'+i+' sur 5" data-r="'+i+'" class="'+(i<=rating?"on":"")+'">★</button>';$("stars").innerHTML=h}
+$("stars").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;rating=+b.dataset.r;drawStars()});
+
+function render(){
+  var n=data.length,mins=data.reduce(function(a,s){return a+(+s.dur||0)},0);
+  $("sN").textContent=n;
+  $("sH").textContent=(mins/60).toFixed(mins%60===0?0:1).replace(".",",")+" h";
+  $("sR").textContent=n?(data.reduce(function(a,s){return a+s.rating},0)/n).toFixed(1).replace(".",",")+" ★":"–";
+  var c={};data.forEach(function(s){if(s.spot)c[s.spot]=(c[s.spot]||0)+1});
+  var best=Object.keys(c).sort(function(a,b){return c[b]-c[a]})[0];
+  $("sS").textContent=best||"–";$("sS").style.fontSize=best&&best.length>12?"1.1rem":"";
+  $("spots").innerHTML=Object.keys(c).map(function(s){return'<option value="'+esc(s)+'">'}).join("");
+
+  var now=new Date(),months=[];
+  for(var i=5;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({k:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"),l:d.toLocaleDateString("fr-FR",{month:"short"}),n:0})}
+  data.forEach(function(s){var k=s.date.slice(0,7);months.forEach(function(m){if(m.k===k)m.n++})});
+  var max=Math.max.apply(null,months.map(function(m){return m.n}).concat([1])),svg='<svg viewBox="0 0 300 90" width="100%" role="img" aria-label="Sessions des 6 derniers mois">';
+  months.forEach(function(m,i){var h=Math.round(m.n/max*50),x=i*50+10;
+    svg+='<rect x="'+x+'" y="'+(60-h)+'" width="30" height="'+h+'" rx="4" fill="var(--bar)" opacity="'+(m.n?1:.15)+'"/>'+(m.n?'<text x="'+(x+15)+'" y="'+(55-h)+'" text-anchor="middle" font-size="11" fill="var(--ink)">'+m.n+'</text>':'')+'<text x="'+(x+15)+'" y="78" text-anchor="middle" font-size="11" fill="var(--muted)">'+esc(m.l)+'</text>'});
+  $("chart").innerHTML=svg+"</svg>";
+
+  var sorted=data.slice().sort(function(a,b){return b.date.localeCompare(a.date)||b.id-a.id});
+  $("list").innerHTML=sorted.length?sorted.map(function(s){
+    var l1=esc(fmtDate(s.date))+', '+esc(fmtDur(s.dur)),l2="";
+    if(sport==="surf"){l1+=', '+nf(+s.size,1)+' m';l2='Houle '+esc((s.swell||"").toLowerCase())+', vent '+esc((s.wind||"").toLowerCase())+', marée '+esc((s.tide||"").toLowerCase())}
+    else{l1+=', '+nf(+s.wkn,0)+' nd';l2='Aile '+nf(+s.wsz,1)+' m²'+(s.gear?', '+esc(s.gear):'')}
+    return'<div class="sess"><div class="top"><span class="spot">'+esc(s.spot||"Spot non précisé")+'</span><span style="color:var(--star)" aria-label="'+s.rating+' sur 5">'+"★".repeat(s.rating)+'</span></div>'
+    +'<div class="meta">'+l1+'</div><div class="meta">'+l2+'</div>'
+    +(s.notes?'<div class="note">'+esc(s.notes)+'</div>':'')
+    +'<button class="del" data-id="'+s.id+'">Supprimer</button></div>'}).join("")
+    :'<p class="empty">Aucune session enregistrée. Remplis le formulaire ci-dessus pour commencer.</p>';
+}
+
+$("list").addEventListener("click",function(e){var b=e.target.closest(".del");if(!b)return;if(!confirm("Supprimer cette session ?"))return;data=data.filter(function(s){return String(s.id)!==b.dataset.id});save();render()});
+
+$("save").addEventListener("click",function(){
+  var dur=parseInt($("dur").value,10);
+  if(!$("date").value||!dur||dur<1){alert("Indique une date et une durée valide.");return}
+  var s={id:Date.now(),date:$("date").value,dur:dur,spot:$("spot").value.trim(),rating:rating,notes:$("notes").value.trim()};
+  if(sport==="surf"){s.size=parseFloat($("size").value)||0;s.swell=$("swell").value;s.wind=$("wind").value;s.tide=$("tide").value}
+  else{s.wkn=parseFloat($("wkn").value)||0;s.wsz=parseFloat($("wsz").value)||0;s.gear=$("gear").value.trim()}
+  data.push(s);save();$("notes").value="";render();
+  var b=$("save");b.textContent="Session enregistrée";setTimeout(function(){b.textContent="Enregistrer la session"},1500);
+});
+
+/* Prévisions en direct (Open-Meteo) */
+function loadFc(){
+  if(fcState==="loading"||fcState==="ok")return;
+  fcState="loading";
+  var mUrl="https://marine-api.open-meteo.com/v1/marine?latitude=47.70&longitude=-3.60&hourly=wave_height,wave_period,wave_direction,sea_level_height_msl&timezone=Europe%2FParis&forecast_days=4";
+  var wUrl="https://api.open-meteo.com/v1/forecast?latitude=47.76&longitude=-3.52&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m&wind_speed_unit=kn&timezone=Europe%2FParis&forecast_days=4";
+  Promise.all([fetch(mUrl).then(function(r){if(!r.ok)throw 0;return r.json()}),fetch(wUrl).then(function(r){if(!r.ok)throw 0;return r.json()})]).then(function(res){
+    fcData={m:res[0].hourly,w:res[1].hourly};fcState="ok";renderFc();
+  }).catch(function(){
+    fcState="idle";var el=$("fc");el.className="";
+    el.innerHTML='<p class="err">Impossible de charger les prévisions. Vérifie ta connexion.</p><button type="button" class="retry" id="fcRetry">Réessayer</button>';
+    $("fcRetry").addEventListener("click",function(){el.className="empty";el.textContent="Chargement des prévisions…";loadFc()});
+  });
+}
+function renderFc(){
+  var el=$("fc");if(!fcData)return;
+  $("fcTitle").textContent=sport==="surf"?"Prévisions surf, Guidel-Plages":"Prévisions wing, Guidel-Plages";
+  var m=fcData.m,w=fcData.w,slots=[7,10,13,16,19],last="",now=Date.now(),rows=0,wing=sport==="wing";
+  var h='<div class="fc"><table><thead><tr><th>Heure</th>'+(wing?'<th>Vent</th><th>Rafales</th><th>Vagues</th>':'<th>Vagues</th><th>Vent</th><th>Marée</th>')+'</tr></thead><tbody>';
+  for(var i=0;i<m.time.length&&rows<15;i++){
+    var t=m.time[i],hr=+t.slice(11,13),day=t.slice(0,10);
+    if(slots.indexOf(hr)<0||new Date(t).getTime()<now-3*3600000)continue;
+    if(day!==last){last=day;var p=day.split("-");h+='<tr class="day"><th colspan="4">'+new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"short"})+'</th></tr>'}
+    var wi=w.time.indexOf(t),ws=wi>=0?w.wind_speed_10m[wi]:null,wg=wi>=0?w.wind_gusts_10m[wi]:null,wd=wi>=0?w.wind_direction_10m[wi]:null;
+    var land=typeof wd==="number"&&wd>=20&&wd<=160,dir=typeof wd==="number"?compass(wd):"";
+    var wave=nf(m.wave_height[i],1)+' m, '+nf(m.wave_period[i],0)+' s';
+    if(wing){
+      var cls=typeof ws==="number"?(land?'warn':(ws>=12&&ws<=25?'good':'')):'';
+      h+='<tr><td>'+hr+' h</td><td class="'+cls+'">'+nf(ws,0)+' nd '+dir+(land?' ⚠':'')+'</td><td>'+nf(wg,0)+' nd</td><td>'+wave+'</td></tr>';
+    }else{
+      var sl=m.sea_level_height_msl[i];
+      h+='<tr><td>'+hr+' h</td><td>'+wave+(typeof m.wave_direction[i]==="number"?' '+compass(m.wave_direction[i]):'')+'</td><td'+(land&&ws<20?' class="good"':'')+'>'+nf(ws,0)+' nd '+dir+(land?' (terre)':'')+'</td><td>'+(typeof sl==="number"?(sl>0?'+':'')+nf(sl,1)+' m':'–')+'</td></tr>';
+    }
+    rows++;
+  }
+  var note=wing?'Vent en nœuds. En vert : 12 à 25 nœuds. ⚠ vent de terre : prudence, il pousse vers le large.':'Vent en nœuds. En vert : vent de terre et modéré. La marée est un niveau par rapport à la moyenne, pas un horaire officiel.';
+  el.className="";el.innerHTML=rows?h+'</tbody></table></div><p class="empty" style="font-size:.8rem;margin:8px 0 0">'+note+'</p>':'<p class="err">Aucune donnée disponible pour le moment.</p>';
+}
+
+/* Navigation : sport + volet */
+function apply(){
+  $("spSurf").setAttribute("aria-selected",String(sport==="surf"));$("spWing").setAttribute("aria-selected",String(sport==="wing"));
+  $("tbS").setAttribute("aria-selected",String(tab==="S"));$("tbF").setAttribute("aria-selected",String(tab==="F"));
+  document.querySelectorAll("[data-sp],[data-tb]").forEach(function(el){
+    if(el.tagName==="BUTTON")return;
+    var sp=el.dataset.sp,tb=el.dataset.tb;
+    el.hidden=!((!sp||sp===sport)&&(!tb||tb===tab));
+  });
+  if(tab==="F"){loadFc();renderFc()}
+}
+document.querySelectorAll("[data-sp]").forEach(function(b){if(b.tagName==="BUTTON")b.addEventListener("click",function(){sport=b.dataset.sp;load();render();apply()})});
+document.querySelectorAll("button[data-tb]").forEach(function(b){b.addEventListener("click",function(){tab=b.dataset.tb;apply()})});
+
+$("date").value=today();load();drawStars();render();apply();
+})();
+</script>
+</body>
+</html>
